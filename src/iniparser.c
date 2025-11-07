@@ -2,11 +2,25 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <assert.h>
 
 #define MAX_LINE_LENGTH 1024
 
-// Trim leading and trailing whitespace
-char *trim(char *str) {
+/**
+ * @brief Removes leading and trailing whitespace from a string.
+ *
+ * This function modifies the input string in place by:
+ * - Advancing the pointer past any leading whitespace characters.
+ * - Replacing trailing whitespace characters with null terminators.
+ *
+ * @param[in, out] str Pointer to the input string to be trimmed. Must be modifiable.
+ * @return Pointer to the trimmed string (may be shifted forward from the original).
+ *
+ * @note The returned pointer may not be the same as the original input.
+ *       The input string is modified directly and must be writable. 
+ */
+static char *IniParser_trim(char *str) {
+    assert(str != NULL);
     while (isspace((unsigned char)*str)) str++;
 
     char *end = str + strlen(str) - 1;
@@ -18,9 +32,27 @@ char *trim(char *str) {
     return str;
 }
 
-// Remove comments unless inside quotes
-void strip_comments(char *line) {
+/**
+ * @brief Removes comments and trailing newline from a line of text.
+ *
+ * This function scans the input string and strips out comments that begin with
+ * a semicolon (`;`) or hash (`#`) character, unless they appear inside double quotes.
+ * It also removes a trailing newline character if present.
+ *
+ * @param[in, out] line Pointer to a modifiable null-terminated string. Must not be NULL.
+ *
+ * @return None.
+ *
+ * @note The input string is modified in place. Quoted comment characters are preserved.
+ *
+ * @warning The function uses an assertion to ensure the input is not NULL.
+ *          Passing a NULL pointer will terminate the program.
+ */
+static void IniParser_stripComments(char *line) {
     bool in_quotes = false;
+
+    assert(line != NULL);
+
     for (int i = 0; line[i] != '\0'; i++) {
         if (line[i] == '"') {
             in_quotes = !in_quotes;
@@ -28,46 +60,63 @@ void strip_comments(char *line) {
             line[i] = '\0';
             break;
         }
+        else {
+            // continue scanning
+        }
     }
 
     // Remove trailing newline
     size_t len = strlen(line);
-    if (len > 0 && line[len - 1] == '\n') line[len - 1] = '\0';
+    if ((len > 0) && (line[len - 1] == '\n')) {
+        line[len - 1] = '\0';
+    }
 }
 
-void parse_ini_file(const char *filename) {
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        perror("Error opening file");
-        return;
-    }
+/**
+ * @brief Parses a single line from an INI file.
+ *
+ * This function processes a line from an INI configuration file by:
+ * - Stripping comments and trailing newline characters.
+ * - Trimming leading and trailing whitespace.
+ * - Skipping blank lines.
+ * - Detecting and printing section headers (e.g., `[SectionName]`).
+ * - Detecting and printing key-value pairs (e.g., `key = value`).
+ *
+ * @param[in, out] line Pointer to a modifiable null-terminated string representing one line of input.
+ *
+ * @return None.
+ *
+ * @note The input string is modified in place. The function prints parsed results to standard output.
+ *
+ * @warning The function asserts that the input is not NULL. Passing a NULL pointer will terminate the program.
+ */
+void IniParser_parse(char *line) {
+    assert(line != NULL);
+    IniParser_stripComments(line);
+    char *trimmed = IniParser_trim(line);
 
-    char line[MAX_LINE_LENGTH];
-    while (fgets(line, sizeof(line), file)) {
-        strip_comments(line);
-        char *trimmed = trim(line);
-
-        if (*trimmed == '\0') continue; // Skip blank lines
-
+    if (*trimmed != '\0') {
         if (*trimmed == '[') {
             char *end = strchr(trimmed, ']');
             if (end) {
                 *end = '\0';
-                char *section = trim(trimmed + 1);
+                char *section = IniParser_trim(trimmed + 1);
                 printf("Section: '%s'\n", section);
             }
         } else {
             char *equals = strchr(trimmed, '=');
             if (equals) {
                 *equals = '\0';
-                char *key = trim(trimmed);
-                char *value = trim(equals + 1);
+                char *key = IniParser_trim(trimmed);
+                char *value = IniParser_trim(equals + 1);
                 printf("Key: '%s', Value: '%s'\n", key, value);
             }
-        }
+        }    
     }
+}
 
-    fclose(file);
+void parse_ini_file(const char *filename) {
+
 }
 
 int main(int argc, char *argv[]) {
@@ -76,6 +125,17 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    parse_ini_file(argv[1]);
+    FILE *file = fopen(argv[1], "r");
+    if (!file) {
+        perror("Error opening file");
+        return 1;
+    }
+
+    char line[MAX_LINE_LENGTH];
+    while (fgets(line, sizeof(line), file)) {
+        IniParser_parse(line);
+    }
+
+    fclose(file);
     return 0;
 }
