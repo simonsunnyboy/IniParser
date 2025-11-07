@@ -1,4 +1,5 @@
 if(NOT PROJECT_NAME)
+    cmake_minimum_required(VERSION 3.10)
     project(IniParser)
     set(INIPARSER_ENABLE_UNITTEST ON)
 endif()
