@@ -30,10 +30,8 @@
  */
 
 #include <stdio.h>
-#include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
-#include <assert.h>
 
 #include "iniparser/iniparser.h"
 
@@ -53,7 +51,17 @@ int main(int argc, char *argv[]) {
 
     char line[MAX_LINE_LENGTH];
     while (fgets(line, sizeof(line), file)) {
-        IniParser_parse(line);
+        IniParserResult result;
+        IniParser_parse(line, &result);
+        
+        if (result.Section) {
+            printf("Parsed Section: '%s'\n", result.Section);
+        } else if (result.Key && result.Value) {
+            printf("Parsed Key: '%s', Value: '%s'\n", result.Key, result.Value);
+        }
+        else {
+            // Blank line or comment
+        }       
     }
 
     fclose(file);

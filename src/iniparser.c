@@ -32,7 +32,6 @@
  * THE SOFTWARE.
  */
 
-#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
@@ -107,43 +106,28 @@ static void IniParser_stripComments(char *line) {
 }
 
 /**
- * @brief Parses a single line from an INI file.
- *
- * This function processes a line from an INI configuration file by:
- * - Stripping comments and trailing newline characters.
- * - Trimming leading and trailing whitespace.
- * - Skipping blank lines.
- * - Detecting and printing section headers (e.g., `[SectionName]`).
- * - Detecting and printing key-value pairs (e.g., `key = value`).
- *
- * @param[in, out] line Pointer to a modifiable null-terminated string representing one line of input.
- *
- * @return None.
- *
- * @note The input string is modified in place. The function prints parsed results to standard output.
- *
- * @warning The function asserts that the input is not NULL. Passing a NULL pointer will terminate the program.
+ * @internal see iniparser.h
  */
-void IniParser_parse(char *line) {
+void IniParser_parse(char *line, IniParserResult *result) {
     assert(line != NULL);
     IniParser_stripComments(line);
     char *trimmed = IniParser_trim(line);
+
+    *result = (IniParserResult){.Section = NULL, .Key = NULL, .Value = NULL };
 
     if (*trimmed != '\0') {
         if (*trimmed == '[') {
             char *end = strchr(trimmed, ']');
             if (end) {
                 *end = '\0';
-                char *section = IniParser_trim(trimmed + 1);
-                printf("Section: '%s'\n", section);
+                result->Section = IniParser_trim(trimmed + 1);
             }
         } else {
             char *equals = strchr(trimmed, '=');
             if (equals) {
                 *equals = '\0';
-                char *key = IniParser_trim(trimmed);
-                char *value = IniParser_trim(equals + 1);
-                printf("Key: '%s', Value: '%s'\n", key, value);
+                result->Key = IniParser_trim(trimmed);
+                result->Value = IniParser_trim(equals + 1);
             }
         }    
     }

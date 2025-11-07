@@ -32,7 +32,21 @@
  * THE SOFTWARE.
  */
 #ifndef INIPARSER_H
-    #define INIPARSER_H 
+    #define INIPARSER_H
+
+    /**
+     * @brief Structure to hold parsed INI data.
+     * This structure contains pointers to the section name, key, and value.
+     * 
+     * - Section is valid if pointer is not NULL.
+     * - Key and Value are only valid if both pointers are not NULL.
+     * - Evalution order is Section before Key/Value.
+     */
+    typedef struct {
+        char *Section;
+        char *Key;
+        char *Value;
+    } IniParserResult;
 
     /**
      * @brief Parses a single line from an INI file.
@@ -45,6 +59,7 @@
      * - Detecting and printing key-value pairs (e.g., `key = value`).
      *
      * @param[in, out] line Pointer to a modifiable null-terminated string representing one line of input.
+     * @param[out] result Pointer to IniParserResult structure to hold parsed results. Existing contents will be overwritten.
      *
      * @return None.
      *
@@ -52,7 +67,7 @@
      *
      * @warning The function asserts that the input is not NULL. Passing a NULL pointer will terminate the program.
      */
-    void IniParser_parse(char *line);
+    void IniParser_parse(char *line, IniParserResult *result);
 
 #endif
 /**
