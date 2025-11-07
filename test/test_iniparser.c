@@ -56,8 +56,16 @@ int main(int argc, char *argv[]) {
         
         if (result.Section) {
             printf("Parsed Section: '%s'\n", result.Section);
-        } else if (result.Key && result.Value) {
-            printf("Parsed Key: '%s', Value: '%s'\n", result.Key, result.Value);
+        } else if (result.Key) {
+            if(result.Value) {
+                printf("Parsed Key: '%s', Value: '%s'\n", result.Key, result.Value);
+            } else {
+                printf("Parsed Key: '%s' WITHOUT value\n", result.Key);
+            }        
+        } else if (result.Key == NULL) {
+            if(result.Value != NULL) {
+                printf("Parsed Value: '%s' WITHOUT key\n", result.Value);
+            }
         }
         else {
             // Blank line or comment

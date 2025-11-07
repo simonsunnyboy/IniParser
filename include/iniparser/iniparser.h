@@ -41,6 +41,7 @@
      * - Section is valid if pointer is not NULL.
      * - Key and Value are only valid if both pointers are not NULL.
      * - Evalution order is Section before Key/Value.
+     * - missing Key and/or Value combinations mark both as NULL
      */
     typedef struct {
         char *Section;

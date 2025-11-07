@@ -127,7 +127,18 @@ void IniParser_parse(char *line, IniParserResult *result) {
             if (equals) {
                 *equals = '\0';
                 result->Key = IniParser_trim(trimmed);
+
+                if(result->Key != NULL && strlen(result->Key) == 0)
+                {
+                    result->Key = NULL;
+                }   
+
                 result->Value = IniParser_trim(equals + 1);
+
+                if(result->Value != NULL && strlen(result->Value) == 0)
+                {
+                    result->Value = NULL;
+                }
             }
         }    
     }
