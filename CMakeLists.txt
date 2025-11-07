@@ -1,8 +1,16 @@
 if(NOT PROJECT_NAME)
     project(IniParser)
-    set(INIPARSER_ENABLE_UNITTEST)
+    set(INIPARSER_ENABLE_UNITTEST ON)
 endif()
 
-add_executable(IniParser
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+add_library(IniParser
     src/iniparser.c
 )
+
+if(INIPARSER_ENABLE_UNITTEST)
+    message(STATUS "Enabling unit tests")
+    enable_testing()
+    add_subdirectory(test)
+endif()

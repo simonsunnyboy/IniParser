@@ -38,7 +38,7 @@
 #include <stdbool.h>
 #include <assert.h>
 
-#define MAX_LINE_LENGTH 1024
+#include "iniparser/iniparser.h"
 
 /**
  * @brief Removes leading and trailing whitespace from a string.
@@ -147,31 +147,6 @@ void IniParser_parse(char *line) {
             }
         }    
     }
-}
-
-void parse_ini_file(const char *filename) {
-
-}
-
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <ini_file>\n", argv[0]);
-        return 1;
-    }
-
-    FILE *file = fopen(argv[1], "r");
-    if (!file) {
-        perror("Error opening file");
-        return 1;
-    }
-
-    char line[MAX_LINE_LENGTH];
-    while (fgets(line, sizeof(line), file)) {
-        IniParser_parse(line);
-    }
-
-    fclose(file);
-    return 0;
 }
 
 /**
