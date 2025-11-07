@@ -69,3 +69,13 @@ void parse_ini_file(const char *filename) {
 
     fclose(file);
 }
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <ini_file>\n", argv[0]);
+        return 1;
+    }
+
+    parse_ini_file(argv[1]);
+    return 0;
+}
