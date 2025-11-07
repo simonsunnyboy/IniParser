@@ -10,7 +10,7 @@
  *
  * @author Matthias Arndt <marndt@final-memory.org>
  * @copyright The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2025 Matthias Arndt <marndt@final-memory.org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -50,19 +50,23 @@
  * @return Pointer to the trimmed string (may be shifted forward from the original).
  *
  * @note The returned pointer may not be the same as the original input.
- *       The input string is modified directly and must be writable. 
+ *       The input string is modified directly and must be writable.
  */
-static char *IniParser_trim(char *str) {
-    assert(str != NULL);
-    while (isspace((unsigned char)*str)) str++;
+static char *IniParser_trim ( char *str )
+{
+	assert ( str != NULL );
 
-    char *end = str + strlen(str) - 1;
-    while (end > str && isspace((unsigned char)*end)) {
-        *end = '\0';
-        end--;
-    }
+	while ( isspace ( ( unsigned char ) *str ) ) str++;
 
-    return str;
+	char *end = str + strlen ( str ) - 1;
+
+	while ( end > str && isspace ( ( unsigned char ) *end ) )
+	{
+		*end = '\0';
+		end--;
+	}
+
+	return str;
 }
 
 /**
@@ -81,67 +85,85 @@ static char *IniParser_trim(char *str) {
  * @warning The function uses an assertion to ensure the input is not NULL.
  *          Passing a NULL pointer will terminate the program.
  */
-static void IniParser_stripComments(char *line) {
-    bool in_quotes = false;
+static void IniParser_stripComments ( char *line )
+{
+	bool in_quotes = false;
+	assert ( line != NULL );
 
-    assert(line != NULL);
+	for ( int i = 0; line[i] != '\0'; i++ )
+	{
+		if ( line[i] == '"' )
+		{
+			in_quotes = !in_quotes;
+		}
+		else if ( ( line[i] == ';' || line[i] == '#' ) && !in_quotes )
+		{
+			line[i] = '\0';
+			break;
+		}
+		else
+		{
+			// continue scanning
+		}
+	}
 
-    for (int i = 0; line[i] != '\0'; i++) {
-        if (line[i] == '"') {
-            in_quotes = !in_quotes;
-        } else if ((line[i] == ';' || line[i] == '#') && !in_quotes) {
-            line[i] = '\0';
-            break;
-        }
-        else {
-            // continue scanning
-        }
-    }
+	// Remove trailing newline
+	size_t len = strlen ( line );
 
-    // Remove trailing newline
-    size_t len = strlen(line);
-    if ((len > 0) && (line[len - 1] == '\n')) {
-        line[len - 1] = '\0';
-    }
+	if ( ( len > 0 ) && ( line[len - 1] == '\n' ) )
+	{
+		line[len - 1] = '\0';
+	}
 }
 
 /**
  * @internal see iniparser.h
  */
-void IniParser_parse(char *line, IniParserResult *result) {
-    assert(line != NULL);
-    IniParser_stripComments(line);
-    char *trimmed = IniParser_trim(line);
+void IniParser_parse ( char *line, IniParserResult *result )
+{
+	assert ( line != NULL );
+	IniParser_stripComments ( line );
+	char *trimmed = IniParser_trim ( line );
+	*result = ( IniParserResult )
+	{
+		.Section = NULL, .Key = NULL, .Value = NULL
+	};
 
-    *result = (IniParserResult){.Section = NULL, .Key = NULL, .Value = NULL };
+	if ( *trimmed != '\0' )
+	{
+		if ( *trimmed == '[' )
+		{
+			char *end = strchr ( trimmed, ']' );
 
-    if (*trimmed != '\0') {
-        if (*trimmed == '[') {
-            char *end = strchr(trimmed, ']');
-            if (end) {
-                *end = '\0';
-                result->Section = IniParser_trim(trimmed + 1);
-            }
-        } else {
-            char *equals = strchr(trimmed, '=');
-            if (equals) {
-                *equals = '\0';
-                result->Key = IniParser_trim(trimmed);
+			if ( end )
+			{
+				*end = '\0';
+				result->Section = IniParser_trim ( trimmed + 1 );
+			}
+		}
+		else
+		{
+			char *equals = strchr ( trimmed, '=' );
 
-                if(result->Key != NULL && strlen(result->Key) == 0)
-                {
-                    result->Key = NULL;
-                }   
+			if ( equals )
+			{
+				*equals = '\0';
+				result->Key = IniParser_trim ( trimmed );
 
-                result->Value = IniParser_trim(equals + 1);
+				if ( result->Key != NULL && strlen ( result->Key ) == 0 )
+				{
+					result->Key = NULL;
+				}
 
-                if(result->Value != NULL && strlen(result->Value) == 0)
-                {
-                    result->Value = NULL;
-                }
-            }
-        }    
-    }
+				result->Value = IniParser_trim ( equals + 1 );
+
+				if ( result->Value != NULL && strlen ( result->Value ) == 0 )
+				{
+					result->Value = NULL;
+				}
+			}
+		}
+	}
 }
 
 /**

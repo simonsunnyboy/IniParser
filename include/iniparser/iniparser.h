@@ -10,7 +10,7 @@
  *
  * @author Matthias Arndt <marndt@final-memory.org>
  * @copyright The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2025 Matthias Arndt <marndt@final-memory.org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,43 +32,44 @@
  * THE SOFTWARE.
  */
 #ifndef INIPARSER_H
-    #define INIPARSER_H
+#define INIPARSER_H
 
-    /**
-     * @brief Structure to hold parsed INI data.
-     * This structure contains pointers to the section name, key, and value.
-     * 
-     * - Section is valid if pointer is not NULL.
-     * - Key and Value are only valid if both pointers are not NULL.
-     * - Evalution order is Section before Key/Value.
-     * - missing Key and/or Value combinations mark both as NULL
-     */
-    typedef struct {
-        char *Section;
-        char *Key;
-        char *Value;
-    } IniParserResult;
+/**
+ * @brief Structure to hold parsed INI data.
+ * This structure contains pointers to the section name, key, and value.
+ *
+ * - Section is valid if pointer is not NULL.
+ * - Key and Value are only valid if both pointers are not NULL.
+ * - Evalution order is Section before Key/Value.
+ * - missing Key and/or Value combinations mark both as NULL
+ */
+typedef struct
+{
+	char *Section;
+	char *Key;
+	char *Value;
+} IniParserResult;
 
-    /**
-     * @brief Parses a single line from an INI file.
-     *
-     * This function processes a line from an INI configuration file by:
-     * - Stripping comments and trailing newline characters.
-     * - Trimming leading and trailing whitespace.
-     * - Skipping blank lines.
-     * - Detecting and printing section headers (e.g., `[SectionName]`).
-     * - Detecting and printing key-value pairs (e.g., `key = value`).
-     *
-     * @param[in, out] line Pointer to a modifiable null-terminated string representing one line of input.
-     * @param[out] result Pointer to IniParserResult structure to hold parsed results. Existing contents will be overwritten.
-     *
-     * @return None.
-     *
-     * @note The input string is modified in place. The function prints parsed results to standard output.
-     *
-     * @warning The function asserts that the input is not NULL. Passing a NULL pointer will terminate the program.
-     */
-    void IniParser_parse(char *line, IniParserResult *result);
+/**
+ * @brief Parses a single line from an INI file.
+ *
+ * This function processes a line from an INI configuration file by:
+ * - Stripping comments and trailing newline characters.
+ * - Trimming leading and trailing whitespace.
+ * - Skipping blank lines.
+ * - Detecting and printing section headers (e.g., `[SectionName]`).
+ * - Detecting and printing key-value pairs (e.g., `key = value`).
+ *
+ * @param[in, out] line Pointer to a modifiable null-terminated string representing one line of input.
+ * @param[out] result Pointer to IniParserResult structure to hold parsed results. Existing contents will be overwritten.
+ *
+ * @return None.
+ *
+ * @note The input string is modified in place. The function prints parsed results to standard output.
+ *
+ * @warning The function asserts that the input is not NULL. Passing a NULL pointer will terminate the program.
+ */
+void IniParser_parse ( char *line, IniParserResult *result );
 
 #endif
 /**
