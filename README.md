@@ -9,6 +9,8 @@ The MIT License applies. See the file LICENSE for details
 This is a parser for .INI files used by older Windows programs written in C99.
 A service function determines section names, key and value pairs from a given input.
 
+Interfaces allow linkage with C++ code.
+
 ## System requirements
 
 - C99 compliant C compiler
@@ -28,3 +30,8 @@ A service function determines section names, key and value pairs from a given in
 
 - The parser cannot handle values given in quotes stretching over multiple
   lines.
+
+
+## Changelog
+
+ - V0.1.0: initial release

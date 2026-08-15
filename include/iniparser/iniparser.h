@@ -34,6 +34,10 @@
 #ifndef INIPARSER_H
 #define INIPARSER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief Structure to hold parsed INI data.
  * This structure contains pointers to the section name, key, and value.
@@ -70,6 +74,10 @@ typedef struct
  * @warning The function asserts that the input is not NULL. Passing a NULL pointer will terminate the program.
  */
 void IniParser_parse ( char *line, IniParserResult *result );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 /**
